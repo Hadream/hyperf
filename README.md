@@ -7,12 +7,19 @@
 Hyperf对系统环境有一些要求，它只能在Linux和Mac环境下运行，但是由于Docker虚拟化技术的发展，适用于Windows的Docker也可以用作Windows下的运行环境。
 
 如果您不想使用Docker作为运行环境的基础，则需要确保您的操作环境满足以下要求： 
+  
   -PHP >= 7.2
+  
   -Swoole   PHP扩展> = 4.4，并且禁用了“短名称”
+  
   -OpenSSL  PHP扩展
+  
   -JSON     PHP扩展
+  
   -PDO      PHP扩展（如果需要使用MySQL客户端）
+  
   -Redis    PHP扩展（如果需要使用Redis Client）
+  
   -Protobuf PHP扩展（如果需要使用Client的gRPC Server）
 
 # 使用Composer安装
