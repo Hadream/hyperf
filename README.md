@@ -1,36 +1,27 @@
-# Introduction
+# 项目介绍
 
-This is a skeleton application using the Hyperf framework. This application is meant to be used as a starting place for those looking to get their feet wet with Hyperf Framework.
+这是个人开发的基于Hyperf框架之上的学习项目
 
-# Requirements
+# 要求
 
-Hyperf has some requirements for the system environment, it can only run under Linux and Mac environment, but due to the development of Docker virtualization technology, Docker for Windows can also be used as the running environment under Windows.
+Hyperf对系统环境有一些要求，它只能在Linux和Mac环境下运行，但是由于Docker虚拟化技术的发展，适用于Windows的Docker也可以用作Windows下的运行环境。
 
-The various versions of Dockerfile have been prepared for you in the [hyperf\hyperf-docker](https://github.com/hyperf/hyperf-docker) project, or directly based on the already built [hyperf\hyperf](https://hub.docker.com/r/hyperf/hyperf) Image to run.
+如果您不想使用Docker作为运行环境的基础，则需要确保您的操作环境满足以下要求： 
+  -PHP >= 7.2
+  -Swoole   PHP扩展> = 4.4，并且禁用了“短名称”
+  -OpenSSL  PHP扩展
+  -JSON     PHP扩展
+  -PDO      PHP扩展（如果需要使用MySQL客户端）
+  -Redis    PHP扩展（如果需要使用Redis Client）
+  -Protobuf PHP扩展（如果需要使用Client的gRPC Server）
 
-When you don't want to use Docker as the basis for your running environment, you need to make sure that your operating environment meets the following requirements:  
+# 使用Composer安装
 
- - PHP >= 7.2
- - Swoole PHP extension >= 4.4，and Disabled `Short Name`
- - OpenSSL PHP extension
- - JSON PHP extension
- - PDO PHP extension （If you need to use MySQL Client）
- - Redis PHP extension （If you need to use Redis Client）
- - Protobuf PHP extension （If you need to use gRPC Server of Client）
-
-# Installation using Composer
-
-The easiest way to create a new Hyperf project is to use Composer. If you don't have it already installed, then please install as per the documentation.
-
-To create your new Hyperf project:
-
-$ composer create-project hyperf/hyperf-skeleton path/to/install
-
-Once installed, you can run the server immediately using the command below.
-
-$ cd path/to/install
-$ php bin/hyperf.php start
-
-This will start the cli-server on port `9501`, and bind it to all network interfaces. You can then visit the site at `http://localhost:9501/`
-
-which will bring up Hyperf default home page.
+创建新的Hyperf项目的最简单方法是使用Composer。 如果尚未安装，请按照文档进行安装。
+要创建新的Hyperf项目，请执行以下操作：
+$ composer create-project hyperf / hyperf-skeleton路径/到/安装
+安装完成后，您可以使用以下命令立即运行服务器。
+$ cd路径/到/安装
+$ php bin / hyperf.php开始
+这将在端口“ 9501”上启动cli服务器，并将其绑定到所有网络接口。 然后，您可以访问http//localhost:9501/上的站点。
+这将打开Hyperf默认主页。
