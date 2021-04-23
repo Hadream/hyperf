@@ -9,8 +9,10 @@ declare(strict_types=1);
  * @contact  group@hyperf.io
  * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
+
 namespace App\Exception\Handler;
 
+use App\Common\Constants\ResponseCode;
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\ExceptionHandler\ExceptionHandler;
 use Hyperf\HttpMessage\Stream\SwooleStream;
@@ -33,7 +35,25 @@ class AppExceptionHandler extends ExceptionHandler
     {
         $this->logger->error(sprintf('%s[%s] in %s', $throwable->getMessage(), $throwable->getLine(), $throwable->getFile()));
         $this->logger->error($throwable->getTraceAsString());
-        return $response->withHeader('Server', 'Hyperf')->withStatus(500)->withBody(new SwooleStream('Internal Server Error.'));
+        if (env('APP_ENV', 'dev') == 'dev') {
+            // 格式化输出
+            $data = json_encode([
+                'code' => $throwable->getCode(),
+                'message' => $throwable->getMessage(),
+                'line' => $throwable->getLine(),
+            ], JSON_UNESCAPED_UNICODE);
+        } else {
+            $data = json_encode([
+                'code' => ResponseCode::SERVER_ERROR,
+                'message' => ResponseCode::SERVER_ERROR_MSG,
+            ], JSON_UNESCAPED_UNICODE);
+        }
+
+        return $response
+            ->withHeader('Server', 'Hyperf')
+            ->withStatus(500)
+            ->withAddedHeader('content-type', 'application/json; charset=utf-8')
+            ->withBody(new SwooleStream($data));
     }
 
     public function isValid(Throwable $throwable): bool

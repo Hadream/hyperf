@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Request\Http;
+namespace App\Common\Request\Http;
 
-use App\Request\BaseRequest;
+use App\Common\Request\BaseRequest;
 
 /**
  * 权限控制器验证

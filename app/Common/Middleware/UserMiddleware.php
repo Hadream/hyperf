@@ -13,10 +13,11 @@ use Phper666\JWTAuth\Util\JWTUtil;
 use Hyperf\Utils\Context;
 
 /**
- * Http Token 授权验证中间件
- * @package App\Middleware
+ * 用户信息中间件
+ * Class UserMiddleware
+ * @package App\Common\Middleware
  */
-class JWTAuthMiddleware implements MiddlewareInterface
+class UserMiddleware implements MiddlewareInterface
 {
     /**
      * @var RequestInterface
@@ -40,48 +41,37 @@ class JWTAuthMiddleware implements MiddlewareInterface
         $this->jwt = $jwt;
     }
 
+    /**
+     * jwt验证过程
+     * @param ServerRequestInterface $request
+     * @param RequestHandlerInterface $handler
+     * @return ResponseInterface
+     */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $isValidToken = false;
-
         // 获取请求token
         $token = $request->getHeaderLine('Authorization');
+
         if (empty($token)) {
             $token = $this->request->input('token', '');
-        } else {
-            $token = JWTUtil::handleToken($token);
         }
-
-        if (!empty($token)) {
+        if (strlen($token) > 0) {
             try {
+                $token = JWTUtil::handleToken($token);
+
                 if ($token !== false && $this->jwt->checkToken($token)) {
-                    $isValidToken = true;
+                    $request = Context::get(ServerRequestInterface::class);
+                    $user = $this->jwt->getParserData($token);
+                    $request = $request->withAttribute('user', $user);
+                    Context::set(ServerRequestInterface::class, $request);
                 }
             } catch (\Exception $e) {
+                return $this->response->json([
+                    'code' => 401,
+                    'message' => '请先登陆~',
+                ]);
             }
         }
-
-        if (!$isValidToken) {
-            return $this->response->withStatus(401)->json([
-                'code' => 401,
-                'message' => 'Token authentication does not pass',
-            ]);
-        }
-
-        $request = $this->setRequestContext($token);
         return $handler->handle($request);
-    }
-
-    private function setRequestContext(string $token): ServerRequestInterface
-    {
-        $request = Context::get(ServerRequestInterface::class);
-
-        $jwtData = $this->jwt->getParserData($token);
-
-        $request = $request->withAttribute('auth_data', $jwtData);
-
-        Context::set(ServerRequestInterface::class, $request);
-
-        return $request;
     }
 }

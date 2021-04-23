@@ -1,10 +1,8 @@
 <?php
 
-namespace App\Request;
+namespace App\Common\Request;
 
 use Hyperf\Validation\Request\FormRequest;
-
-use Psr\Container\ContainerInterface;
 
 /**
  * 验证器基类
@@ -13,4 +11,5 @@ use Psr\Container\ContainerInterface;
  */
 class BaseRequest extends FormRequest
 {
+
 }

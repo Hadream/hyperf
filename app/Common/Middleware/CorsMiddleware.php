@@ -26,11 +26,7 @@ class CorsMiddleware implements MiddlewareInterface
             ->withHeader('Access-Control-Allow-Headers', 'DNT,Keep-Alive,User-Agent,Cache-Control,Content-Type,Authorization');
 
         Context::set(ResponseInterface::class, $response);
-
-        if ($request->getMethod() == 'OPTIONS') {
-            return $response;
-        }
-
+        if ($request->getMethod() == 'OPTIONS') return $response;
         return $handler->handle($request);
     }
 }

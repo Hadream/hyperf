@@ -1,24 +1,21 @@
 <?php
 
-namespace App\Controller\Api;
+namespace App\Controller\Http\Api;
 
+use App\Controller\Http\BaseController;
+use App\Common\Request\Http\AuthRequest;
+use App\Common\Service\User\UserService;
+use App\Common\Middleware\AuthMiddleware;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
 use Hyperf\HttpServer\Annotation\RequestMapping;
 use Hyperf\HttpServer\Annotation\Middleware;
-use App\Common\Unit\JwtAuth;
-
-use App\Controller\Api\BaseController;
-use App\Request\Api\AuthRequest;
-
-use App\Middleware\JWTAuthMiddleware;
-use App\Common\Constants\ResponseCode;
-use App\Model\User;
-use App\Service\UserService;
 
 /**
  * 授权相关控制器
- * @Controller(path="/api/v1/auth")
+ * @Controller(prefix="api/v1/auth")
+ * Class AuthController
+ * @package App\Controller\Http\Api
  */
 class AuthController extends BaseController
 {
@@ -29,38 +26,27 @@ class AuthController extends BaseController
     private $userService;
 
     /**
-     * @Inject
-     * @var JwtAuth
-     */
-    protected $jwt;
-
-    /**
      * 授权登录接口
      * @RequestMapping(path="login", methods="post")
+     * @param AuthRequest $request
+     * @return mixed
      */
     public function login(AuthRequest $request)
     {
         $params = $request->validated();
-
         $userInfo = $this->userService->login($params['mobile'], $params['password'], $params['platform']);
         if (!$userInfo) return $this->error('账号不存在或密码填写错误^_^');
-        $token = $this->jwt->getToken($userInfo['id'], $params['platform']);
-        //try {
-        //    $jwtInfo = [
-        //        'user_id' => $userInfo['id'],
-        //        'platform' => $params['platform'],
-        //    ];
-        //    $token = $this->jwt->getToken();
-        //    //$token = $this->jwt->getToken();
-        //} catch (\Exception $exception) {
-        //    return $this->error('登录异常，请稍后再试^_^');
-        //}
-        var_dump($token);
+
+        $jwtInfo = [
+            'user_id' => $userInfo['id'],
+            'platform' => $params['platform'],
+        ];
+        $token = $this->getToken($jwtInfo);
 
         return $this->success([
             'authorize' => [
                 'token' => $token,
-                //'expires_in' => $this->jwt->getTTL()
+                'expires_in' => $this->getTTLToken()
             ],
             'user_info' => [
                 'username' => $userInfo['username'],
@@ -72,8 +58,8 @@ class AuthController extends BaseController
 
     /**
      * 账号注册接口
-     *
      * @RequestMapping(path="register", methods="post")
+     * @return mixed
      */
     public function register()
     {
@@ -86,36 +72,35 @@ class AuthController extends BaseController
             'platform' => 'required|in:h5,ios,windows,mac,web',
         ]);
 
-        if (!$this->smsCodeService->check('user_register', $params['mobile'], $params['sms_code'])) {
-            return $this->response->fail('验证码填写错误...');
-        }
-
         $isTrue = $this->userService->register([
             'mobile' => $params['mobile'],
             'password' => $params['password'],
             'nickname' => strip_tags($params['nickname']),
         ]);
 
-        if (!$isTrue) {
-            return $this->response->fail('账号注册失败...');
-        }
-
-        // 删除验证码缓存
-        $this->smsCodeService->delCode('user_register', $params['mobile']);
-
-        return $this->response->success([], '账号注册成功...');
+        if (!$isTrue) return $this->response->fail('账号注册失败...');
+        return $this->success('账号注册成功');
     }
 
     /**
      * 退出登录接口
-     *
-     * @RequestMapping(path="logout", methods="post")
-     * @Middleware(JWTAuthMiddleware::class)
+     * @RequestMapping(path="logout", methods="get")
+     * @Middleware(AuthMiddleware::class)
+     * @return mixed
      */
     public function logout()
     {
-        $this->jwt->logout();
+        $this->logoutToken();
+        return $this->success('退出成功');
+    }
 
-        return $this->response->success([], 'Successfully logged out');
+    /**
+     * 获取个人信息
+     * @RequestMapping(path="user", methods="get")
+     * @Middleware(AuthMiddleware::class)
+     */
+    public function me()
+    {
+        return $this->success($this->userService->findById($this->uid(), 'id, username, mobile'));
     }
 }

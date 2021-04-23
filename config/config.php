@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 /**
  * This file is part of Hyperf.
  *
@@ -9,13 +10,17 @@ declare(strict_types=1);
  * @contact  group@hyperf.io
  * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
+
 use Hyperf\Contract\StdoutLoggerInterface;
 use Psr\Log\LogLevel;
 
 return [
     'app_name' => env('APP_NAME', 'skeleton'),
+    // 生产环境使用 prod 值
     'app_env' => env('APP_ENV', 'dev'),
+    // 是否使用注解扫描缓存
     'scan_cacheable' => env('SCAN_CACHEABLE', false),
+    
     StdoutLoggerInterface::class => [
         'log_level' => [
             LogLevel::ALERT,
