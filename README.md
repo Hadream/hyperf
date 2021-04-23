@@ -6,6 +6,7 @@
 
 Hyperf对系统环境有一些要求，它只能在Linux和Mac环境下运行，但是由于Docker虚拟化技术的发展，适用于Windows的Docker也可以用作Windows下的运行环境。
 
+
 如果您不想使用Docker作为运行环境的基础，则需要确保您的操作环境满足以下要求： 
   
   -PHP >= 7.2
@@ -25,10 +26,17 @@ Hyperf对系统环境有一些要求，它只能在Linux和Mac环境下运行，
 # 使用Composer安装
 
 创建新的Hyperf项目的最简单方法是使用Composer。 如果尚未安装，请按照文档进行安装。
+
 要创建新的Hyperf项目，请执行以下操作：
+
 $ composer create-project hyperf / hyperf-skeleton路径/到/安装
+
 安装完成后，您可以使用以下命令立即运行服务器。
+
 $ cd路径/到/安装
+
 $ php bin / hyperf.php开始
+
 这将在端口“ 9501”上启动cli服务器，并将其绑定到所有网络接口。 然后，您可以访问http//localhost:9501/上的站点。
+
 这将打开Hyperf默认主页。
